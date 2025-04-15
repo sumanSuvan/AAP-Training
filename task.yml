@@ -1,4 +1,4 @@
-- hosts:
+- hosts: web
   #user:
   tasks:
    - name: Create directory
