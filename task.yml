@@ -1,7 +1,7 @@
-#hosts:
-#user:
-tasks:
- - name: Create directory
-   file:
-     path: /etc/suman
-     state: directory
+- hosts:
+  #user:
+  tasks:
+   - name: Create directory
+     file:
+       path: /etc/suman
+       state: directory
