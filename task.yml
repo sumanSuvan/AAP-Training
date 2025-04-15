@@ -3,12 +3,12 @@
   tasks:
    - name: Create directory
      file:
-       path: /etc/suman
-       state: directory
+       path: {{ dir_name }}
+       state: {{ dir_state }}
    - name: Create user
      user:
        name: usersuman
        shell: /bin/bash
        uid: 6666
        comment: "my rh-aaap user "
-       state: present
+       state: {{ user_state }}
