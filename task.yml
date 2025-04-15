@@ -1,0 +1,7 @@
+#hosts:
+#user:
+tasks:
+ - name: Create directory
+   file:
+     path: /etc/suman
+     state: directory
