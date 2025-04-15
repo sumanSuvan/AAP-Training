@@ -5,10 +5,10 @@
      file:
        path: /etc/suman
        state: directory
-    - name: Create user
-      user:
-        name: usersuman
-        shell: /bin/bash
-        uid: 6666
-        comment: "my rh-aaap user "
-        state: present
+   - name: Create user
+     user:
+       name: usersuman
+       shell: /bin/bash
+       uid: 6666
+       comment: "my rh-aaap user "
+       state: present
