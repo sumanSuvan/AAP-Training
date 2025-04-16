@@ -1,0 +1,7 @@
+package: apache2
+desired_state: present
+web_content: |
+  <h1>This is a demo for Apache Webserver!</h1>
+  <p>Hostname: {{ ansible_hostname }}</p>
+  <p>IP Address: {{ ansible_default_ipv4.address }}</p>
+  <p>OperatingSystem : {{ ansible_os_family }}</p>
