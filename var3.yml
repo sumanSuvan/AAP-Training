@@ -1,0 +1,30 @@
+- hosts: all
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+      ignore_errors: true
+
+    - name: Install {{ pkg }} package
+      package:
+        name: "{{ pkg }}"
+        state: present
+      ignore_errors: true
+
+    - name: Configure hostname and IP in webpage
+      template:
+        src: index.html
+        dest: /var/www/html/index.html
+      notify: Restart service
+      ignore_errors: true
+
+    - name: Show assigned role
+      debug:
+        msg: "Host {{ inventory_hostname }} has role: {{ role }} and is located in {{ location }} (env: {{ env }})"
+
+  handlers:
+    - name: Restart service
+      service:
+        name: "{{ pkg }}"
+        state: restarted
