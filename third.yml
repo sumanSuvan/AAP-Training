@@ -1,0 +1,52 @@
+---
+- name: "Deploy {{ pkgname }} webserver"
+  hosts: m1
+  become: yes
+  vars:
+    pkgname: apache2             
+    service: apache2             
+    desired_state: present       # 'present' or 'absent' (via survey)
+    listen_port: 81              # Port number (via survey)
+
+  tasks:
+    - name: Update apt package index
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Ensure {{ pkgname }} is in desired state {{ desired_state }}
+      ansible.builtin.apt:
+        name: "{{ pkgname }}"
+        state: "{{ desired_state }}"
+
+    - name: Update Apache listening port (only if installing)
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: "^Listen "
+        line: "Listen {{ listen_port }}"
+      when: desired_state == "present"
+      notify: 
+      - restart_apache
+
+    - name: Update virtual host port (only if installing)
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/sites-available/000-default.conf
+        regexp: '^<VirtualHost \*:'
+        line: "<VirtualHost *:{{ listen_port }}>"
+      when: desired_state == "present"
+      notify:
+      - restart_apache
+
+    - name: Deploy Apache homepage (only if installing)
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        content: "<h1>This is a demo from Raman Khanna!</h1>"
+      when: desired_state == "present"
+      notify:
+      - restart_apache
+
+  handlers:
+    - name: restart_apache
+      ansible.builtin.service:
+        name: "{{ service }}"
+        enabled: yes
+        state: restarted
