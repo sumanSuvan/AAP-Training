@@ -1,0 +1,8 @@
+[web]
+m1 ansible_host=18.118.155.192
+
+[web:vars]
+web_content=<h1>This is a demo</h1><p>Host: {{ ansible_hostname }}</p>
+
+[db]
+m2 ansible_host=18.224.171.73
