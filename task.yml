@@ -4,7 +4,7 @@
    - name: Create directory in target server
      file:
        path: /etc/testingweb/
-       state: present
+       state: directory
    - name: Create user
      user:
        name: usersuman
