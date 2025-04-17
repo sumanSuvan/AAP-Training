@@ -1,0 +1,3 @@
+location: Mumbai DC
+role: WebServer
+env: production
