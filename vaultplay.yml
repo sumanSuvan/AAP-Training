@@ -5,7 +5,7 @@
   gather_facts: true
 
   vars_files:
-    - vault_secrets.yml
+    - secrets.yml
 
   tasks:
     - name: Debug current host and group
