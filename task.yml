@@ -1,7 +1,7 @@
 - hosts: web
 # user: ubuntu
   tasks:
-   - name: Create directory
+   - name: Create directory in target server
      file:
        path: "{{ dir_name }}"
        state: "{{ dir_state }}"
