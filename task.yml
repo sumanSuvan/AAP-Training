@@ -3,12 +3,12 @@
   tasks:
    - name: Create directory in target server
      file:
-       path: "{{ dir_name }}"
-       state: "{{ dir_state }}"
+       path: /etc/testingweb/
+       state: present
    - name: Create user
      user:
        name: usersuman
        shell: /bin/bash
        uid: 6666
        comment: "my rh-aaap user "
-       state: "{{ user_state }}"
+       state: present
