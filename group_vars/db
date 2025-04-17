@@ -1,0 +1,2 @@
+pkg: mariadb-server   #optional
+ansible_password: "{{ encrypted_db_password }}"
