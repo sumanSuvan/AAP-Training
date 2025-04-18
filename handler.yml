@@ -42,8 +42,8 @@
             name: cowsay
             state: present
         # Installs a real package (cowsay) instead of failing completely – a nice way to recover and continue.    
-        - name: Notify rescue handler
-          meta: flush_handlers
+    - name: Notify rescue handler
+      meta: flush_handlers
         # Forces Ansible to run any queued handlers immediately, instead of at the end of the play.  
 
       always:
