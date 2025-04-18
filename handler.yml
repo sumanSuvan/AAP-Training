@@ -1,0 +1,77 @@
+---
+- name: Demonstrate Advanced Error Handling in AAP 2.5
+  hosts: web
+  become: yes
+  gather_facts: true
+
+  vars:
+    bad_package: "fakepackage12"
+    log_file: "/var/log/aap_error_handling.log"
+    rescue_triggered: false  # default
+
+  tasks:
+    - name: Task 1 - Ensure Python is installed
+      apt:
+        name: python3
+        state: present
+
+    - name: Block of tasks with real error (bad package)
+      block:
+        - name: Task 2 - Attempt to install a fake package (intentional error)
+          apt:
+            name: "{{ bad_package }}"
+            state: present
+          notify: Log bad package install failure
+        # Additional tasks can be placed here if needed
+      rescue:
+        - name: Set fact that rescue was triggered
+          set_fact:
+            rescue_triggered: true
+        # This user-defined fact will be used later to confirm that the rescue was completed.    
+
+        - name: Rescue - Log the error to file
+          copy:
+            content: |
+              [{{ ansible_date_time.iso8601 }}] ERROR: Failed to install {{ bad_package }} on {{ inventory_hostname }}. Rescue block executed.
+            dest: "{{ log_file }}"
+            force: no
+            mode: '0644'
+            owner: root
+            group: root
+            remote_src: no
+
+        - name: Rescue - Install an alternative valid package
+          apt:
+            name: cowsay
+            state: present
+        # Installs a real package (cowsay) instead of failing completely – a nice way to recover and continue.    
+
+        - name: Notify rescue handler
+          meta: flush_handlers
+        # Forces Ansible to run any queued handlers immediately, instead of at the end of the play.  
+
+      always:
+        - name: Always - Final message after error handling block
+          debug:
+            msg: "Block + Rescue + Always complete on {{ inventory_hostname }}"
+        # Tasks under "always" run no matter what, even if the above block succeeded or failed.
+
+    # Continuing with the playbook after block/rescue/always...
+
+    - name: Task 3 - Print message based on rescue status
+      debug:
+        msg: "Rescue was triggered on {{ inventory_hostname }}"
+      when: rescue_triggered | bool
+      # Only runs if the rescue_triggered variable is true.
+
+    - name: Task 4 - Final verification
+      debug:
+        msg: "Playbook completed successfully on {{ inventory_hostname }}"
+
+  handlers:
+    - name: Log bad package install failure
+      lineinfile:
+        path: "{{ log_file }}"
+        line: "[{{ ansible_date_time.iso8601 }}] HANDLER: Package {{ bad_package }} install failed on {{ inventory_hostname }}."
+        create: yes
+        mode: '0644'
