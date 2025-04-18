@@ -1,8 +1,16 @@
-[web]
-m1 ansible_host=18.118.155.192
+#[web]
+#m1 ansible_host=18.118.155.192
 
-[web:vars]
-web_content=<h1>This is a demo</h1><p>Host: {{ ansible_hostname }}</p>
+#[web:vars]
+#web_content=<h1>This is a demo</h1><p>Host: {{ ansible_hostname }}</p>
 
-[db]
-m2 ansible_host=18.224.171.73
+#[db]
+#m2 ansible_host=18.224.171.73
+
+[webservers]
+web01 ansible_host=172.31.20.195 
+web02 ansible_host=172.31.29.217 
+
+[webservers:vars]
+ansible_user=ubuntu
+ansible_python_interpreter=/usr/bin/python3
