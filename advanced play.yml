@@ -1,0 +1,97 @@
+---
+- name: Demonstrate Advanced Playbook Features
+  hosts: webservers
+  become: true
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+      notify: restart nginx
+
+    - name: Create multiple directories using loop
+      file:
+        path: "/var/www/{{ item }}"
+        state: directory
+        owner: www-data
+        mode: '0755'
+      loop:
+        - site1
+        - site2
+        - site3
+
+    - name: Deploy index.html in each site folder
+      copy:
+        content: |
+          <html>
+            <head><title>Welcome to {{ item }}</title></head>
+            <body>
+              <h1>Welcome to {{ item }}!</h1>
+            </body>
+          </html>
+        dest: "/var/www/{{ item }}/index.html"
+        owner: www-data
+        group: www-data
+        mode: '0644'
+      loop:
+        - site1
+        - site2
+        - site3
+
+    - name: Conditionally deploy nginx config only on web01
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify: restart nginx  
+      when: inventory_hostname == "web01"
+
+    - name: Check if port 80 is in use
+      shell: "lsof -i :80 | grep LISTEN | awk '{print $1}' | head -n 1"
+      register: port_check
+      changed_when: false
+      failed_when: false
+
+    - name : testtask1
+      debug:
+        var: port_check
+
+    - name : test2task
+      debug:
+        msg: " this task will only run when testtask1 is succesful"
+      #when: port_check.rc != 0  
+      when: port_check == 0
+
+    - name: Debug info on what service is using port 80
+      debug:
+        msg: "Port 80 is being used by {{ port_check.stdout }}"
+      when: port_check.stdout != ""
+
+    - name: Stop Apache if it's using port 80
+      service:
+        name: apache2
+        state: stopped
+      when: "'apache2' in port_check.stdout"
+
+    - name: Disable Apache to prevent it from starting on boot
+      service:
+        name: apache2
+        enabled: false
+      when: "'apache2' in port_check.stdout"
+
+    - name: Ensure NGINX is running
+      service:
+        name: nginx
+        state: started
+        enabled: true
+  
+    
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
