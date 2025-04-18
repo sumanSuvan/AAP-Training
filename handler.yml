@@ -3,7 +3,6 @@
   hosts: web
   become: yes
   gather_facts: true
-
   vars:
     bad_package: "fakepackage12"
     log_file: "/var/log/aap_error_handling.log"
@@ -14,13 +13,13 @@
       apt:
         name: python3
         state: present
-
     - name: Block of tasks with real error (bad package)
       block:
         - name: Task 2 - Attempt to install a fake package (intentional error)
           apt:
             name: "{{ bad_package }}"
             state: present
+          changed_when: true
           notify: Log bad package install failure
         # Additional tasks can be placed here if needed
       rescue:
@@ -28,7 +27,6 @@
           set_fact:
             rescue_triggered: true
         # This user-defined fact will be used later to confirm that the rescue was completed.    
-
         - name: Rescue - Log the error to file
           copy:
             content: |
@@ -39,13 +37,11 @@
             owner: root
             group: root
             remote_src: no
-
         - name: Rescue - Install an alternative valid package
           apt:
             name: cowsay
             state: present
         # Installs a real package (cowsay) instead of failing completely – a nice way to recover and continue.    
-
         - name: Notify rescue handler
           meta: flush_handlers
         # Forces Ansible to run any queued handlers immediately, instead of at the end of the play.  
