@@ -19,7 +19,6 @@
           apt:
             name: "{{ bad_package }}"
             state: present
-          changed_when: true
           notify: Log bad package install failure
         # Additional tasks can be placed here if needed
       rescue:
