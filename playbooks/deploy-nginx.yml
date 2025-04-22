@@ -4,4 +4,4 @@
   vars:
     webserver_welcome_msg: "Hello from the Enterprise Role!"
   roles:
-    - webserver
+    - roles/webserver
