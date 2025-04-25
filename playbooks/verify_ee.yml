@@ -1,0 +1,21 @@
+---
+- name: Verify Custom Execution Environment
+  hosts: localhost
+  gather_facts: false
+  tasks:
+ 
+    - name: Verify boto3 is installed
+      ansible.builtin.command: python3 -c "import boto3; print(boto3.__version__)"
+      register: boto3_output
+      changed_when: false
+      failed_when: boto3_output.rc != 0
+    - debug:
+        msg: "boto3 version: {{ boto3_output.stdout }}"
+ 
+    - name: Check jq installation
+      ansible.builtin.command: jq --version
+      register: jq_output
+      changed_when: false
+      failed_when: jq_output.rc != 0
+    - debug:
+        msg: "jq version: {{ jq_output.stdout }}"
