@@ -1,12 +1,9 @@
 ---
 - name: Deploy web server - Deploy flask app
-  hosts: prod
-  vars:
-    env: "{{ env }}"
-    version: "{{ app_ver }}"
+  hosts: "{{ environment }}"
   tasks:
     - name: Show environment and version
       debug:
-        msg: "Deploying to {{ env }} environment with version {{ version }}"
+        msg: "Deploying to {{ environment }} environment with version {{ version }}"
   roles:
     - roles/appserver
