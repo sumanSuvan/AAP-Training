@@ -5,8 +5,8 @@ m1 ansible_host=172.31.4.123
 m2 ansible_host=172.31.9.20
 m3 ansible_host=172.31.5.231
 
-[dev]
+[dev:children]
 web
 
-[prod]
+[prod:children]
 app
