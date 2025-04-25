@@ -1,1 +1,28 @@
+---
+- name: Install Flask and Gunicorn in the virtual environment
+  pip:
+    requirements: "{{ flask_app_directory }}/requirements.txt"
+    virtualenv: "{{ flask_venv }}"
 
+- name: Deploy Flask app
+  copy:
+    src: "app.py"
+    dest: "{{ flask_app_directory }}/{{ flask_app_file }}"
+    owner: "{{ flask_app_user }}"
+    group: "{{ flask_app_group }}"
+
+- name: Create Gunicorn systemd service
+  template:
+    src: "flaskapp.service.j2"
+    dest: "/etc/systemd/system/{{ flask_app_name }}.service"
+    mode: '0644'
+
+- name: Reload systemd to recognize the new service
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start Gunicorn service
+  systemd:
+    name: "{{ flask_app_name }}.service"
+    state: started
+    enabled: yes
