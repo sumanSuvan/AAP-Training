@@ -1,6 +1,7 @@
 ---
 - name: Deploy web server - Deploy flask app
   hosts: "{{ environment }}"
+  become: yes
   tasks:
     - name: Show environment and version
       debug:
