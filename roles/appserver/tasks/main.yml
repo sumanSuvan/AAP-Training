@@ -1,12 +1,11 @@
-# tasks/main.yml
 ---
 - name: Update apt cache
-  ansible.builtin.apt:
+  apt:
     update_cache: yes
     cache_valid_time: 3600
 
 - name: Install required dependencies
-  ansible.builtin.apt:
+  apt:
     name:
       - python3-pip
       - python3-venv
@@ -15,47 +14,48 @@
     state: present
 
 - name: Create the application directory
-  ansible.builtin.file:
+  file:
     path: "{{ flask_app_directory }}"
     state: directory
     owner: "{{ flask_app_user }}"
     group: "{{ flask_app_group }}"
     
 - name: Copy requirements.txt to the application directory
-  ansible.builtin.copy:
+  copy:
     src: "requirements.txt"
     dest: "{{ flask_app_directory }}/requirements.txt"
     owner: "{{ flask_app_user }}"
     group: "{{ flask_app_group }}"
+
 - name: Create virtual environment
-  ansible.builtin.command:
+  command:
     cmd: python3 -m venv {{ flask_venv }}
     creates: "{{ flask_venv }}/bin/activate"
 
 - name: Install Flask and Gunicorn in the virtual environment
-  ansible.builtin.pip:
+  pip:
     requirements: "{{ flask_app_directory }}/requirements.txt"
     virtualenv: "{{ flask_venv }}"
 
 - name: Deploy Flask app
-  ansible.builtin.copy:
+  copy:
     src: "files/app.py"
     dest: "{{ flask_app_directory }}/{{ flask_app_file }}"
     owner: "{{ flask_app_user }}"
     group: "{{ flask_app_group }}"
 
 - name: Create Gunicorn systemd service
-  ansible.builtin.template:
+  template:
     src: "flaskapp.service.j2"
     dest: "/etc/systemd/system/{{ flask_app_name }}.service"
     mode: '0644'
 
 - name: Reload systemd to recognize the new service
-  ansible.builtin.systemd:
+  systemd:
     daemon_reload: yes
 
 - name: Enable and start Gunicorn service
-  ansible.builtin.systemd:
+  systemd:
     name: "{{ flask_app_name }}.service"
     state: started
     enabled: yes
