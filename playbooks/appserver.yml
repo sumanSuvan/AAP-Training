@@ -9,4 +9,4 @@
       debug:
         msg: "Deploying to {{ env }} environment with version {{ version }}"
   roles:
-    - appserver
+    - roles/appserver
