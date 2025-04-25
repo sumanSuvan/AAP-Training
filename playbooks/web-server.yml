@@ -1,5 +1,5 @@
 - name: Deploy production-ready NGINX
-  hosts: all
+  hosts: "{{ environment }}"
   become: yes
   vars:
     webserver_welcome_msg: "Hello from the Enterprise Role!"
