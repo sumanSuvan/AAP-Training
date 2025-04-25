@@ -5,10 +5,8 @@ m1 ansible_host=172.31.4.123
 m2 ansible_host=172.31.9.20
 m3 ansible_host=172.31.5.231
 
-#[webservers]
-#web01 ansible_host=172.31.20.195 
-#web02 ansible_host=172.31.29.217 
+[dev]
+web
 
-#[webservers:vars]
-#ansible_user=ubuntu
-#ansible_python_interpreter=/usr/bin/python3
+[prod]
+app
